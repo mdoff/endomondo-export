@@ -5,6 +5,7 @@ import sys
 
 class Endomondo:
 	session = requests.Session()
+	headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:26.0) Gecko/20100101 Firefox/26.0'}
 	url_init = "https://www.endomondo.com/access"
 	url_base = "http://endomondo.com"
 	email = ""
@@ -14,6 +15,7 @@ class Endomondo:
 	def __init__(self, email, password):
 		self.email = email 
 		self.password = password
+		self.session.headers.update(self.headers)
 
 	def get_url(self, url):
 		return self.session.get(url)
@@ -22,6 +24,7 @@ class Endomondo:
 		content = self.get_url(self.url_init)
 		m = re.search('action="([^"]+)" ', content.text)
 		url_login = self.url_init + m.group(1)
+		self.session.headers.update({'referer': self.url_init})
 		post_data = {'signInButton':'x','rememberMe':'on','email':self.email,'password':self.password}
 		self.session.post(url_login,data=post_data)
 
